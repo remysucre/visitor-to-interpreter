@@ -21,6 +21,8 @@ public list[str] strParts(str s) {
 		return [ ]; 
 }
 
+// build node
+
 public Entity makeClassOrInterfaceName(str s, bool ifc, str ps...) { 
 	list[str] sp = strParts(s);
 	list[Entity] params = [ entity([typeParameter(p)]) | p <- ps ];
@@ -43,6 +45,8 @@ public Entity makeInterfaceName(str s, str ps...) {
 
 alias MethodInfo = rel[str mname, loc mloc, Entity owner, Entity method];
 alias MethodInfoWDef = rel[str mname, loc mloc, Entity owner, Entity method, Entity def];
+
+// match and bind
 
 public MethodInfo getVisitorsInClassOrInterface(Resource r, str s, bool ifc, str ps...) {
 	im = invert(r@methodDecls);
@@ -81,6 +85,8 @@ public map[str mname, str mcode] getVisitorCodeInInterface(Resource r, str s, st
 	return getVisitorCodeInClassOrInterface(r,s,true,ps);
 }
 
+// transform
+
 public Entity makeNameIntoParameterName(Entity e) {
 	if (entity(list[Id] idl) := e) { 
 		Id lastid = head(tail(idl,1));
@@ -96,10 +102,14 @@ public Entity makeNameIntoParameterName(Entity e) {
 	return e;
 }
 
+// match
+
 public set[Entity] getMethodSetWithParameter(Resource r, Entity param) {
 	Entity paramName = makeNameIntoParameterName(param);
 	return { mn | <_,mn> <- r@declaredMethods, entity([_*,method(_,[_*,paramName,_*],_)]) := mn };
 }
+
+// match
 
 public rel[Entity method, loc l] getMethodsWithParameter(Resource r, Entity param) {
 	set[Entity] methods = getMethodSetWithParameter(r, param);
